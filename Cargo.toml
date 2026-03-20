@@ -1,0 +1,23 @@
+[package]
+name = "vlpo-worker-rs"
+version = "0.0.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = "z"
+strip = "symbols"
+panic = "abort"
+
+[dependencies]
+base64 = "0.22"
+futures-util = "0.3"
+md5 = "0.8.0"
+sha2 = "0.10"
+tokio = { version = "1", features = ["io-util"] }
+web-sys = { version = "0.3", features = ["BinaryType", "WebSocket"] }
+worker = "0.7"
