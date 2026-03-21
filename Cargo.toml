@@ -16,6 +16,7 @@ panic = "abort"
 [dependencies]
 base64 = "0.22"
 futures-util = "0.3"
+js-sys = "0.3"
 md5 = "0.8.0"
 sha2 = "0.10"
 tokio = { version = "1", features = ["io-util"] }

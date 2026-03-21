@@ -26,8 +26,8 @@ pub(crate) use trace_log;
 #[event(fetch)]
 async fn fetch(req: Request, env: Env, ctx: Context) -> Result<Response> {
     if proxy::ProxyService::is_websocket_request(&req) {
-        return proxy::ProxyService::new(env).handle(req, ctx).await;
+        return proxy::ProxyService::new(env)?.handle(req, ctx).await;
     }
 
-    Response::ok("vlpo-worker-rs kernel is running")
+    Response::ok("vlpo-worker-rs kernel is running!")
 }

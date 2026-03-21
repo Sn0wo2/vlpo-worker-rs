@@ -1,4 +1,24 @@
 #[derive(Clone, Debug)]
+pub enum DnsTransport {
+    Tcp,
+    Tls,
+    Https,
+}
+
+#[derive(Clone, Debug)]
+pub struct DnsUpstream {
+    pub transport: DnsTransport,
+    pub host: String,
+    pub port: u16,
+    pub path: String,
+}
+
+#[derive(Clone, Debug)]
+pub struct DnsResolver {
+    pub upstreams: Vec<DnsUpstream>,
+}
+
+#[derive(Clone, Debug)]
 pub struct SocketTarget {
     pub host: String,
     pub port: u16,
@@ -14,9 +34,25 @@ pub struct InitialRequest {
     pub response_header: Option<Vec<u8>>,
 }
 
+impl InitialRequest {
+    pub fn is_dns_request(&self) -> bool {
+        self.is_udp && self.port == 53
+    }
+
+    pub fn is_udp_only(&self) -> bool {
+        self.is_udp && !self.is_dns_request()
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct ProxyPlan {
     pub entries: Vec<ProxyEntry>,
+}
+
+impl ProxyPlan {
+    pub fn has_entries(&self) -> bool {
+        !self.entries.is_empty()
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -38,4 +74,11 @@ pub struct ProxyCredential {
     pub port: u16,
     pub username: Option<String>,
     pub password: Option<String>,
+}
+
+pub struct ProxyConfig {
+    pub user_id: String,
+    pub ws_path: String,
+    pub plan: ProxyPlan,
+    pub dns_resolver: DnsResolver,
 }

@@ -7,8 +7,6 @@ use worker::{Error, Result};
 
 use super::types::SocketTarget;
 
-pub const DNS_FALLBACK_HOST: &str = "8.8.4.4";
-pub const DNS_FALLBACK_PORT: u16 = 53;
 pub const SPEEDTEST_HOST: &str = "speed.cloudflare.com";
 
 pub fn decode_early_data(value: &str) -> Result<Vec<u8>> {
@@ -75,11 +73,22 @@ pub fn first_non_empty(values: &[Option<String>]) -> Option<String> {
         .cloned()
 }
 
+pub fn normalize_path(value: &str) -> String {
+    let trimmed = value.trim();
+    if trimmed.is_empty() || trimmed == "/" {
+        "/".to_string()
+    } else if trimmed.starts_with('/') {
+        trimmed.to_string()
+    } else {
+        format!("/{}", trimmed)
+    }
+}
+
 pub fn is_speedtest_host(host: &str) -> bool {
     host == SPEEDTEST_HOST || host.ends_with(&format!(".{SPEEDTEST_HOST}"))
 }
 
-pub fn looks_like_hash_auth(chunk: &[u8]) -> bool {
+pub fn looks_like_trojan(chunk: &[u8]) -> bool {
     chunk.len() >= 58 && chunk[56] == b'\r' && chunk[57] == b'\n'
 }
 
@@ -194,7 +203,7 @@ pub fn parse_socks_addr(buf: &[u8], index: &mut usize) -> Result<String> {
     }
 }
 
-pub fn parse_route_addr(buf: &[u8], index: &mut usize) -> Result<String> {
+pub fn parse_vless_addr(buf: &[u8], index: &mut usize) -> Result<String> {
     if buf.len() <= *index {
         return Err(Error::RustError("invalid route address type".into()));
     }

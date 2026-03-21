@@ -1,8 +1,9 @@
-mod connect;
+mod config;
+mod dns;
+mod inbound;
+mod outbound;
 mod protocol;
-mod service;
 mod types;
 mod util;
-mod ws;
 
-pub use service::ProxyService;
+pub use inbound::ProxyService;
