@@ -1,19 +1,45 @@
 # vlpo-worker-rs
 
-## Required Settings
+## Required Secrets
 
-Set these before local testing or deployment:
+- `UUID`
+- `WS_PATH`
 
-- `UUID`: access identifier
-- `WS_PATH`: expected WebSocket path
+## Optional Secrets
 
-Optional fallback settings:
+- `PROXYIP`
+- `SOCKS5`
+- `HTTP_PROXY`
+- `DNS_UPSTREAM`
+- `KEY`
+- `PASSWORD`
 
-- `PROXYIP`: fallback relay host or `host:port`
-- `SOCKS5`: SOCKS5 relay in `socks5://user:pass@host:port` form
-- `HTTP_PROXY`: HTTP CONNECT relay in `http://user:pass@host:port` form
+`PROXYIP` keeps the destination port when you only provide a host or IP.
 
-If `PROXYIP` is set without an explicit port, the destination port is reused.
+## DNS Upstream
+
+`DNS_UPSTREAM` accepts one or more entries, separated by commas.
+
+Examples:
+
+```env
+DNS_UPSTREAM=https://dns.google/dns-query
+DNS_UPSTREAM=https://dns.google/dns-query,https://dns.quad9.net/dns-query
+DNS_UPSTREAM=tls://8.8.8.8,tls://9.9.9.9
+DNS_UPSTREAM=8.8.8.8:53,9.9.9.9:53
+```
+
+Supported formats:
+
+- `https://host/dns-query` for DoH
+- `tls://host:853` for DoT
+- `host:53` for TCP DNS
+
+Default DNS upstream:
+
+```env
+DNS_UPSTREAM=https://dns.google/dns-query
+```
 
 ## Local Development
 
@@ -26,9 +52,10 @@ WS_PATH=/your-private-path
 # PROXYIP=1.2.3.4
 # SOCKS5=socks5://user:pass@host:port
 # HTTP_PROXY=http://user:pass@host:port
+# DNS_UPSTREAM=https://dns.google/dns-query,https://dns.quad9.net/dns-query
 ```
 
-Run locally:
+Run:
 
 ```bash
 wrangler dev
@@ -36,10 +63,12 @@ wrangler dev
 
 ## Deployment
 
+Set secrets:
+
 ```bash
 wrangler secret put UUID
 wrangler secret put WS_PATH
-# optional
+wrangler secret put DNS_UPSTREAM
 wrangler secret put PROXYIP
 wrangler secret put SOCKS5
 wrangler secret put HTTP_PROXY
